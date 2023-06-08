@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="loginstyle.css">
+    <script>
+        // 在登录成功后，存储后端返回的值
+        function handleLoginSuccess() {
+          const response = { isLoggedIn: true, message: '登录成功' };
+          localStorage.setItem('userData', JSON.stringify(response));
+        }
+    
+        // 在需要验证的地方获取存储的值并进行验证
+        function verifyLoggedInStatus() {
+          const userData = localStorage.getItem('userData');
+    
+          if (userData) {
+            const response = JSON.parse(userData);
+            if (response.isLoggedIn) {
+              // 用户已登录，执行相关操作
+              console.log('用户已登录');
+            } else {
+              // 用户未登录，执行相关操作
+              console.log('用户未登录');
+            }
+          } else {
+            // 未找到存储的用户数据，执行相关操作
+            console.log('未找到用户数据');
+          }
+        }
+      </script>
+</head>
+
+<body>
+    <div class="box">
+        <div class="content">
+            <img class="login-img images" src="./image/login.jpg" alt="登录">
+            <img class="register-img images" src="./image/register.jpg" alt="注册">
+            <div class="login-wrapper">
+                <div class="top-tips">
+                    <span>番茄钟</span>
+                    <span class="top-tips-span">注册</span>
+                </div>
+                <h1 class="h1-text">登录</h1>
+                <div class="other-login">
+                    <img src="./image/QQ.png" alt="">
+                    <span>使用QQ登录</span>
+                </div>
+                <div class="login-form">
+                    <div class="user-form form-item">
+                        <div class="text-tips">
+                            <span>账号</span>
+                        </div>
+                        <input id="username" type="text">
+                    </div>
+                    <div class="password-form form-item">
+                        <div class="text-tips">
+                            <span>密码</span>
+                            <span class="forgot-password">忘记密码?</span>
+                        </div>
+                        <input id="password" type="password">
+                    </div>
+                    <button class="btn">登录</button>
+                </div>
+                <div class="register-form">
+                    <div class="user-form form-item">
+                        <div class="text-tips">
+                            <span>账号</span>
+                        </div>
+                        <input type="text">
+                    </div>
+                    <div class="password-form form-item">
+                        <div class="text-tips">
+                            <span>密码</span>
+                        </div>
+                        <input type="password">
+                    </div>
+                    <div class="password-form form-item">
+                        <div class="text-tips">
+                            <span>确认密码</span>
+                        </div>
+                        <input type="password">
+                    </div>
+                    <button class="btn">注册</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let flag = 1;
+        document.querySelector('.top-tips-span').addEventListener('click', function () {
+            if (flag) {
+                document.querySelector('.content').classList.add("add-class-content");
+                document.querySelector('.login-img').classList.add("add-class-login-img");
+                document.querySelector('.register-img').classList.add("add-class-register-img");
+                document.querySelector('.login-img').classList.remove("add-class-login-img-show");
+                document.querySelector('.login-wrapper').style.height = '80vh';
+                document.querySelector('.content').style.height = '90vh';
+                document.querySelector('.login-form').style.display = 'none';
+                document.querySelector('.register-form').style.display = 'block';
+                document.querySelector('.top-tips-span').innerHTML = '登录';
+                document.querySelector('.h1-text').innerHTML = '注册';
+                flag = 0;
+            }
+            else {
+                document.querySelector('.content').classList.remove("add-class-content");
+                document.querySelector('.login-img').classList.remove("add-class-login-img");
+                document.querySelector('.login-img').classList.add("add-class-login-img-show");
+                document.querySelector('.register-img').classList.remove("add-class-register-img");
+                document.querySelector('.login-wrapper').style.height = '70vh';
+                document.querySelector('.content').style.height = '85vh';
+                document.querySelector('.login-form').style.display = 'block';
+                document.querySelector('.register-form').style.display = 'none';
+                document.querySelector('.top-tips-span').innerHTML = '注册';
+                document.querySelector('.h1-text').innerHTML = '登录';
+                flag = 1;
+            }
+        });
+
+        // 监听登录按钮点击事件
+        document.querySelector('.btn').addEventListener('click', function () {
+            // 获取输入的用户名和密码
+            const username = document.querySelector('#username').value;
+            const password = document.querySelector('#password').value;
+
+            // 创建包含用户名和密码的对象
+            const credentials = {
+                username: username,
+                password: password
+            };
+
+            // 发送 POST 请求到后端服务器验证登录
+
+            fetch('http://localhost:3000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(credentials)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json(); // 解析响应数据为 JSON 格式
+                    } else {
+                        throw new Error('网络请求失败');
+                    }
+                })
+                .then(data => {
+                    if (data.success) {
+                        // 登录成功，进行页面跳转或其他操作
+                        console.log('登录成功');
+                        localStorage.setItem('isLoggedIn',true);
+                        window.location.href = 'index.html';
+                    } else {
+                        // 登录失败，显示错误消息给用户
+                        console.log('登录失败');
+                    }
+                })
+                .catch(error => {
+                    console.error('发生错误:', error);
+                });
+        });
+    </script>
+</body>
+
+</html>

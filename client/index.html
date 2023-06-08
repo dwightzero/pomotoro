@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>项目列表</title>
+
+    <script>
+      // 1. 获取登录状态，这里用一个变量isLoggedIn表示
+      const isLoggedIn = localStorage.getItem('isLoggedIn'); // TODO: 请用合适的代码获取登录状态
+  
+      // 2. 如果用户未登录，则重定向到登录页面
+      if (!isLoggedIn) {
+          window.location.href = "./login.html"; 
+      }
+    </script>  
+      
+    <style>
+      /* 全局样式 */
+      body {
+        background-color: #222;
+        color: #fff;
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        text-align: center;
+      }
+      
+      /* 标题样式 */
+      h1 {
+        font-size: 40px;
+        color: #2cae90;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+        margin-bottom: 30px;
+        letter-spacing: 2px;
+      }
+      
+      /* 功能菜单样式 */
+      h2 {
+        font-size: 36px;
+        color: #eaf10e;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+        margin-bottom: 20px;
+        letter-spacing: 2px;
+      }
+      
+      a {
+        display: block;
+        color: #007bff;
+        font-size: 24px;
+        text-decoration: none;
+        margin-bottom: 10px;
+        transition: color 0.3s ease;
+      }
+      
+      a:hover {
+        color: #0056b3;
+      }
+    </style>
+    
+  </head>
+  <body>
+    <h1>开启新的番茄钟or旧的番茄钟</h1>
+
+    <h2>功能菜单</h2>
+    <a href="task.html">新的番茄钟</a>
+    <a href="history.html">专注记录</a>
+
+
+    <script>
+      // JavaScript代码
+      const form = document.querySelector("form");
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const projectNameInput = document.querySelector("#project-name");
+        const projectName = projectNameInput.value;
+        const projectLink = document.createElement("a");
+        projectLink.href = $projectName.html;
+        projectLink.textContent = projectName;
+        projectLink.style.fontWeight = "bold";
+        document.body.insertBefore(projectLink, form.nextSibling);
+        projectNameInput.value = "";
+      });
+
+      const fetchData = async () => {
+        const data = await fetch('')
+      }
+    </script>
+  </body>
+</html>

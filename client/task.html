@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flipclock/0.7.8/flipclock.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="pomodoro-style.css">
+    <style>
+        body {
+            background-color: #000;
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #222;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #fff;
+            font-size: 36px;
+        }
+        
+        form {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            font-weight: bold;
+            color: #fff;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+            background-color: #333;
+            color: #fff;
+            margin-bottom: 15px;
+        }
+        
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            color: #fff;
+            background-color: #337ab7;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: #286090;
+        }
+    </style>
+    <title>新任务</title>
+</head>
+<body>
+    <div class="container">
+        <h1>新任务</h1>
+        <form id="newTaskForm" action="/addtask" method="POST">
+            <div class="mb-3">
+                <label for="username">用户名</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="taskName">名称</label>
+                <input type="text" class="form-control" id="taskName" name="taskName" required>
+            </div>
+            <div class="mb-3">
+                <label for="taskDescription">任务描述</label>
+                <textarea class="form-control" id="taskDescription" name="taskDescription" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">提交</button>
+        </form>
+    </div>
+
+    <script>
+        // 监听表单提交事件
+        document.getElementById('newTaskForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // 阻止表单默认提交行为
+            
+            // 获取表单字段的值
+            const username = document.getElementById('username').value;
+            const taskName = document.getElementById('taskName').value;
+            const taskDescription = document.getElementById('taskDescription').value;
+
+            // 创建一个 JSON 对象，将任务名称、描述和用户名传递给后端
+            const taskData = {
+                username: username,
+                taskName: taskName,
+                taskDescription: taskDescription
+            };
+
+            // 发送 POST 请求将任务数据传递给后端
+            fetch('http://localhost:3000/addtask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(taskData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    // 数据保存成功，进行跳转等操作
+                    window.location.href = './pomodoro.html';
+                } else {
+                    alert("添加失败")
+                    throw new Error('Error: ' + response.status);
+                 
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>

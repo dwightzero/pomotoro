@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Task List</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      background-color: #222;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      font-size: 24px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    li:hover {
+      transform: scale(1.1);
+    }
+
+    .delete-button {
+      color: red;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+  </style>
+  <script>
+
+    $(document).ready(function () {
+      // 请求后端API获取任务列表
+      $.ajax({
+        url: 'http://localhost:3000/tasks',
+        method: 'GET',
+        success: function (response) {
+          // 成功获取任务列表后，将任务数据展示在页面上
+          var tasks = response.tasks;
+          var taskList = $('#task-list');
+          taskList.empty(); // 清空现有任务列表
+
+          for (var i = 0; i < tasks.length; i++) {
+            var task = tasks[i];
+            console.log(task);
+            var taskItem = $('<li>').text(task.task_name);
+
+            // 添加点击事件处理程序
+            taskItem.click(function (taskId, userName, taskName) {
+              return function () {
+                // 将任务ID作为查询参数传递给pomodoro.html
+                window.location.href = 'pomodoro.html?taskId=' + taskId;
+              };
+            }(task.task_id));
+
+            // 添加专注次数和专注时间统计
+            var tomatoCycles = task.tomato_cycles;
+
+            //如果时间格式是正确的，那下面这一步转化时间格式就可以不用了
+            var d1 = task.start_time + "";
+            var d2 = task.end_time + "";
+            console.log(d1);
+            var dateBegin = new Date(d1);//将-转化为/，使用new Date
+            var dateEnd = new Date(d2);//将-转化为/，使用new Date
+            // dateBegin=d1;
+            //dateEnd=d2;
+            console.log(dateBegin);
+            console.log(dateEnd);
+            var dateDiff = dateEnd.getTime() - dateBegin.getTime();//时间差的毫秒数
+            var dayDiff = Math.floor(dateDiff / (24 * 3600 * 1000)) + "";//计算出相差天数
+            var leave1 = dateDiff % (24 * 3600 * 1000) + "";    //计算天数后剩余的毫秒数
+            var hours = Math.floor(leave1 / (3600 * 1000)) + "";//计算出小时数
+            //计算相差分钟数
+            var leave2 = leave1 % (3600 * 1000)    //计算小时数后剩余的毫秒数
+            var minutes = Math.floor(leave2 / (60 * 1000))//计算相差分钟数
+            //计算相差秒数
+            var leave3 = leave2 % (60 * 1000)      //计算分钟数后剩余的毫秒数
+            var seconds = Math.round(leave3 / 1000)
+            //+":"+hours+":"+leave1
+            console.log(" 相差 " + dayDiff + "天 " + hours + "小时 " + minutes + " 分钟" + seconds + " 秒")
+
+            var totalTime = dayDiff + "天" + hours + "时" + minutes + "分" + seconds + "秒";
+            var taskStats = $('<span>').text(' (次数: ' + tomatoCycles + ', 总时长: ' + totalTime + ')');
+            taskItem.append(taskStats);
+
+            // 添加删除按钮
+            var deleteButton = $('<span class="delete-button">[删除]</span>');
+            deleteButton.click(function (taskId) {
+              return function (event) {
+                event.stopPropagation(); // 阻止事件冒泡，以防止任务点击事件触发
+                console.log(taskId);
+                // 发送删除任务的请求
+                fetch('http://localhost:3000/delete-task', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ taskId: taskId })
+                })
+                  .then(function (response) {
+                    if (response.ok) {
+                      // 删除任务成功
+                      console.log('Task deleted successfully');
+                      alert('删除成功');
+                      // 刷新页面，重新加载任务列表
+                      location.reload();
+                    } else {
+                      // 处理请求错误
+                      alert('删除失败');
+                      console.error('Error deleting task');
+                    }
+                  })
+                  .catch(function (error) {
+                    // 处理网络错误
+                    alert('删除失败');
+                    console.error('Network error:', error);
+                  });
+              };
+            }(task.task_id));
+
+
+
+            taskItem.append(deleteButton);
+
+            taskList.append(taskItem);
+          }
+        },
+        error: function () {
+          // 处理请求错误
+          console.error('Error fetching tasks');
+        }
+      });
+    });
+  </script>
+</head>
+
+<body>
+  <h1>Task List</h1>
+  <ul id="task-list"></ul>
+</body>
+
+</html>
